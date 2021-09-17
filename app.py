@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 from datetime import datetime
-
+import os
 import json
 from dostoevsky.tokenization import RegexTokenizer
 from dostoevsky.models import FastTextSocialNetworkModel
@@ -34,6 +34,7 @@ def index():
     # print(request.json)
     user = request.form.get('username')
     message = request.form.get('message')
+    print("request", user, message)
 
     mood = max(moodModel.get_mood_coefficient(message).items(),
               key=lambda x: x[1])
@@ -50,4 +51,5 @@ def index():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True)
+  port = int(os.environ.get('PORT', 5001))
+  app.run(host = '0.0.0.0', port = port)
