@@ -9,11 +9,12 @@ class TrainedModel:
     def __init__(self):
         tokenizer = RegexTokenizer()
         self.model = FastTextSocialNetworkModel(tokenizer=tokenizer)
-        pass
+        # pass
 
         
     def get_mood_coefficient(self, input_text):
         return self.model.predict([input_text], k=5)[0]
+        # return {"neutral": 0.5}
 
 class DecisionLadder:
     def get_text_by_mood(mood):
@@ -29,10 +30,10 @@ moodModel = TrainedModel()
 
 
 @app.route('/', methods=['POST'])
-async def index():
-    object = json.loads(request.get_json())
-    user = object['username']
-    message = object['message']
+def index():
+    # print(request.json)
+    user = request.form.get('username')
+    message = request.form.get('message')
 
     mood = max(moodModel.get_mood_coefficient(message).items(),
               key=lambda x: x[1])
@@ -44,7 +45,7 @@ async def index():
         'Mood': mood[0],
         'Current action': DecisionLadder.get_text_by_mood(mood),
         'Potential actions':
-            DecisionLadder.get_options_by_mood_history(total_mood_list)
+            DecisionLadder.get_options_by_mood_history(mood)
     })
 
 
